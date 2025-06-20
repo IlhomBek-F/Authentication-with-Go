@@ -1,13 +1,14 @@
 package database
 
 import (
+	"auth/model"
 	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -47,18 +48,20 @@ func ConnectDB() *sql.DB {
 }
 
 func initServer(port string) *http.Server {
-  portToInt, _ := strconv.Atoi(port)
+	portToInt, _ := strconv.Atoi(port)
 
-  server := &Server{
-	port,
-	db: ConnConnectDB(),
-  }
+	server := &model.Server{
+		Port: portToInt,
+		Db:   ConnectDB(),
+	}
 
-  serverConfig := &http.Server{
-    Addr: fmt.Sprintf(":%d", server.port),
-	Handler: ,
-	IdleTimeOut: time.Minute,
-	ReadTimeOut: 10 * time.Second,
-	WriteTimeout: 30 * time.Second
-  }
+	serverConfig := &http.Server{
+		Addr:         fmt.Sprintf(":%d", server.Port),
+		Handler:      server.RegisterRoutes(),
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 30 * time.Second,
+	}
+
+	return serverConfig
 }

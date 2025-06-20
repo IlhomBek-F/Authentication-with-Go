@@ -1,7 +1,7 @@
 package route
 
 import (
-	"auth/model"
+	"database/sql"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -9,7 +9,12 @@ import (
 	"golang.org/x/time/rate"
 )
 
-func (s *model.Server) RegisterRoutes() http.Handler {
+type Server struct {
+	Port int
+	Db   *sql.DB
+}
+
+func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
