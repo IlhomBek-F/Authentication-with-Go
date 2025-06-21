@@ -1,7 +1,7 @@
 package route
 
 import (
-	"database/sql"
+	"auth/model"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -10,8 +10,7 @@ import (
 )
 
 type Server struct {
-	Port int
-	Db   *sql.DB
+	model.Server
 }
 
 func (s *Server) RegisterRoutes() http.Handler {

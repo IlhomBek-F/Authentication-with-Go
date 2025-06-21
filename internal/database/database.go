@@ -1,6 +1,7 @@
 package database
 
 import (
+	"auth/api/route"
 	"auth/model"
 	"database/sql"
 	"fmt"
@@ -50,9 +51,11 @@ func ConnectDB() *sql.DB {
 func initServer(port string) *http.Server {
 	portToInt, _ := strconv.Atoi(port)
 
-	server := &model.Server{
-		Port: portToInt,
-		Db:   ConnectDB(),
+	server := &route.Server{
+		Server: model.Server{
+			Port: portToInt,
+			Db:   ConnectDB(),
+		},
 	}
 
 	serverConfig := &http.Server{
