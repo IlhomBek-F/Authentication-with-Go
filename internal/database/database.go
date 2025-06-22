@@ -11,28 +11,22 @@ import (
 	"strconv"
 	"time"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 )
 
-func ConnectDB() *sql.DB {
-	err := godotenv.Load("../../.env")
+var (
+	database   = os.Getenv("DB_DATABASE")
+	password   = os.Getenv("DB_PASSWORD")
+	username   = os.Getenv("DB_USERNAME")
+	port       = os.Getenv("PORT")
+	host       = os.Getenv("HOST")
+	schema     = os.Getenv("SCHEMA")
+	dbInstance *sql.DB
+)
 
-	var (
-		database   = os.Getenv("DB_DATABASE")
-		password   = os.Getenv("DB_PASSWORD")
-		username   = os.Getenv("DB_USERNAME")
-		port       = os.Getenv("PORT")
-		host       = os.Getenv("HOST")
-		schema     = os.Getenv("SCHEMA")
-		dbInstance *sql.DB
-	)
-
-	if err != nil {
-		log.Fatal("Error loading env file")
-	}
-
+func connectDB() *sql.DB {
 	// Reuse connection
-
 	if dbInstance != nil {
 		return dbInstance
 	}
@@ -48,13 +42,15 @@ func ConnectDB() *sql.DB {
 	return db
 }
 
-func initServer(port string) *http.Server {
+func InitServer() *http.Server {
+	loadEnviroment()
+
 	portToInt, _ := strconv.Atoi(port)
 
 	server := &route.Server{
 		Server: model.Server{
 			Port: portToInt,
-			Db:   ConnectDB(),
+			Db:   connectDB(),
 		},
 	}
 
@@ -67,4 +63,19 @@ func initServer(port string) *http.Server {
 	}
 
 	return serverConfig
+}
+
+func loadEnviroment() {
+	err := godotenv.Load("../.env")
+
+	if err != nil {
+		log.Fatal("Error loading env file")
+	}
+
+	database = os.Getenv("DB_DATABASE")
+	password = os.Getenv("DB_PASSWORD")
+	username = os.Getenv("DB_USERNAME")
+	port = os.Getenv("PORT")
+	host = os.Getenv("HOST")
+	schema = os.Getenv("SCHEMA")
 }

@@ -1,6 +1,7 @@
 package route
 
 import (
+	"auth/api/controller"
 	"auth/model"
 	"net/http"
 
@@ -27,6 +28,15 @@ func (s *Server) RegisterRoutes() http.Handler {
 		AllowCredentials: true,
 		MaxAge:           30,
 	}))
+
+	server := &controller.Controller{
+		Port: s.Port,
+		Db:   s.Db,
+	}
+
+	publicRouter := e.Group("")
+
+	publicRouter.POST("/signup", server.SignUp)
 
 	return e
 }
