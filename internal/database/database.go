@@ -16,12 +16,12 @@ import (
 )
 
 var (
-	database   = os.Getenv("DB_DATABASE")
-	password   = os.Getenv("DB_PASSWORD")
-	username   = os.Getenv("DB_USERNAME")
-	port       = os.Getenv("PORT")
-	host       = os.Getenv("HOST")
-	schema     = os.Getenv("SCHEMA")
+	database   string
+	password   string
+	username   string
+	port       string
+	host       string
+	schema     string
 	dbInstance *sql.DB
 )
 
@@ -45,7 +45,7 @@ func connectDB() *sql.DB {
 func InitServer() *http.Server {
 	loadEnviroment()
 
-	portToInt, _ := strconv.Atoi(port)
+	portToInt, _ := strconv.Atoi(os.Getenv("PORT"))
 
 	server := &route.Server{
 		Server: model.Server{
@@ -75,7 +75,7 @@ func loadEnviroment() {
 	database = os.Getenv("DB_DATABASE")
 	password = os.Getenv("DB_PASSWORD")
 	username = os.Getenv("DB_USERNAME")
-	port = os.Getenv("PORT")
-	host = os.Getenv("HOST")
-	schema = os.Getenv("SCHEMA")
+	port = os.Getenv("DB_PORT")
+	host = os.Getenv("DB_HOST")
+	schema = os.Getenv("DB_SCHEMA")
 }

@@ -3,16 +3,20 @@ package repositories
 import (
 	"auth/model"
 	"database/sql"
-	"fmt"
 )
 
 func GetByEmail(db *sql.DB, email string) (model.User, error) {
 
-	row := db.QueryRow("SELECT email FROM todos WHERE email = $1", email)
+	row := db.QueryRow("SELECT email, password FROM users WHERE email = $1", email)
 
 	var user model.User
 
 	err := row.Scan(&user.Email, &user.Password)
-	fmt.Println(err.Error())
 	return user, err
+}
+
+func CreateUser(db *sql.DB, newUser model.User) (sql.Result, error) {
+	result, err := db.Exec("INSERT INTO users (email, password) VALUES ($1, $2)", newUser.Email, newUser.Password)
+
+	return result, err
 }

@@ -30,13 +30,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 	}))
 
 	server := &controller.Controller{
-		Port: s.Port,
-		Db:   s.Db,
+		Port: s.Server.Port,
+		Db:   s.Server.Db,
 	}
 
-	publicRouter := e.Group("")
-
-	publicRouter.POST("/signup", server.SignUp)
+	e.POST("/api/signup", server.SignUp)
 
 	return e
 }
