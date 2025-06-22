@@ -35,6 +35,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	}
 
 	e.POST("/api/signup", server.SignUp)
+	e.POST("/api/login", server.Login)
 
 	return e
 }
