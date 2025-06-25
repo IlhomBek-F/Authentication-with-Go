@@ -20,3 +20,30 @@ func CreateUser(db *sql.DB, newUser model.User) (sql.Result, error) {
 
 	return result, err
 }
+
+func GetUsers(db *sql.DB) ([]model.User, error) {
+	rows, err := db.Query("SELECT email, id FROM users")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var user model.User
+	users := []model.User{}
+
+	for rows.Next() {
+		if err := rows.Scan(&user.Email, &user.Id); err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
