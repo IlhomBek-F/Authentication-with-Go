@@ -2,6 +2,7 @@ package database
 
 import (
 	"auth/api/route"
+	"auth/internal/database/migrations"
 	"auth/model"
 	"database/sql"
 	"fmt"
@@ -26,6 +27,8 @@ var (
 )
 
 func connectDB() *sql.DB {
+	loadEnviroment()
+
 	// Reuse connection
 	if dbInstance != nil {
 		return dbInstance
@@ -43,14 +46,18 @@ func connectDB() *sql.DB {
 }
 
 func InitServer() *http.Server {
-	loadEnviroment()
+	db := connectDB()
+
+	if err := migrations.InitMigrations(db); err != nil {
+		log.Fatal("Error while running migrations")
+	}
 
 	portToInt, _ := strconv.Atoi(os.Getenv("PORT"))
 
 	server := &route.Server{
 		Server: model.Server{
 			Port: portToInt,
-			Db:   connectDB(),
+			Db:   db,
 		},
 	}
 

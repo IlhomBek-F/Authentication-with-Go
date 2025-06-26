@@ -7,11 +7,11 @@ import (
 
 func GetByEmail(db *sql.DB, email string) (model.User, error) {
 
-	row := db.QueryRow("SELECT * FROM users WHERE email = $1", email)
+	row := db.QueryRow("SELECT id, email, created_at, updated_at, deleted_at FROM users WHERE email = $1", email)
 
 	var user model.User
 
-	err := row.Scan(&user.Email, &user.Password, &user.Id)
+	err := row.Scan(&user.Id, &user.Email, &user.Created_at, &user.Updated_at, &user.Deleted_at)
 	return user, err
 }
 
@@ -22,7 +22,7 @@ func CreateUser(db *sql.DB, newUser model.User) (sql.Result, error) {
 }
 
 func GetUsers(db *sql.DB) ([]model.User, error) {
-	rows, err := db.Query("SELECT email, id FROM users")
+	rows, err := db.Query("SELECT id, email, created_at, updated_at, deleted_at FROM users")
 
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func GetUsers(db *sql.DB) ([]model.User, error) {
 	users := []model.User{}
 
 	for rows.Next() {
-		if err := rows.Scan(&user.Email, &user.Id); err != nil {
+		if err := rows.Scan(&user.Id, &user.Email, &user.Created_at, &user.Updated_at, &user.Deleted_at); err != nil {
 			return nil, err
 		}
 
