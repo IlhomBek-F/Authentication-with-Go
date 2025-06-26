@@ -7,11 +7,11 @@ import (
 
 func GetByEmail(db *sql.DB, email string) (model.User, error) {
 
-	row := db.QueryRow("SELECT id, email, created_at, updated_at, deleted_at FROM users WHERE email = $1", email)
+	row := db.QueryRow("SELECT * FROM users WHERE email = $1", email)
 
 	var user model.User
 
-	err := row.Scan(&user.Id, &user.Email, &user.Created_at, &user.Updated_at, &user.Deleted_at)
+	err := row.Scan(&user.Id, &user.Email, &user.Password, &user.Created_at, &user.Updated_at, &user.Deleted_at)
 	return user, err
 }
 
