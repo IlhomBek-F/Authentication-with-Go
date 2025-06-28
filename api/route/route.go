@@ -17,9 +17,20 @@ type Server struct {
 	model.Server
 }
 
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	if err := cv.validator.Struct(i); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
-	e.Validator = &model.CustomValidator{Validator: validator.New()}
+	e.Validator = &CustomValidator{validator: validator.New()}
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(rate.Limit(10))))

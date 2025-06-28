@@ -13,12 +13,16 @@ import (
 )
 
 func (s *Controller) Login(e echo.Context) error {
-	var userCredential model.User
+	var userCredential = new(model.User)
 
 	err := e.Bind(&userCredential)
 
 	if err != nil {
 		return e.JSON(http.StatusInternalServerError, model.ErrorResponse{Status: http.StatusInternalServerError, Message: "Internal server error"})
+	}
+
+	if validationError := e.Validate(userCredential); validationError != nil {
+		return e.JSON(http.StatusUnprocessableEntity, model.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: validationError.Error()})
 	}
 
 	user, err := repositories.GetByEmail(s.Db, userCredential.Email)
