@@ -16,12 +16,16 @@ type Controller struct {
 }
 
 func (s *Controller) SignUp(c echo.Context) error {
-	var newUser model.User
+	var newUser = new(model.User)
 
 	err := c.Bind(&newUser)
 
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.ErrorResponse{Status: http.StatusBadRequest, Message: err.Error()})
+	}
+
+	if validationError := c.Validate(newUser); validationError != nil {
+		return c.JSON(http.StatusUnprocessableEntity, model.ErrorResponse{Status: http.StatusUnprocessableEntity, Message: validationError.Error()})
 	}
 
 	_, err = repositories.GetByEmail(s.Db, newUser.Email)
@@ -37,7 +41,7 @@ func (s *Controller) SignUp(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, model.ErrorResponse{Status: http.StatusInternalServerError, Message: err.Error()})
 	}
 
-	_, err = repositories.CreateUser(s.Db, newUser)
+	_, err = repositories.CreateUser(s.Db, *newUser)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, model.ErrorResponse{Status: http.StatusInternalServerError, Message: err.Error()})
 	}
