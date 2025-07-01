@@ -10,8 +10,9 @@ import (
 func GenerateAccessToken(user model.User, secret string, expiry int) (accessToken string, err error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry)).Unix()
 	claims := &model.JwtClaims{
-		Name: user.Email,
-		Id:   user.Id,
+		Name:  user.Email,
+		Id:    user.Id,
+		Roles: []string{"admin"},
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: exp,
 		},

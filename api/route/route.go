@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/go-playground/validator"
+	"github.com/golang-jwt/jwt/v4"
 	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -50,7 +51,18 @@ func (s *Server) RegisterRoutes() http.Handler {
 	publicRoute.POST("/login", server.Login)
 
 	protectedRoute.Use(echojwt.JWT([]byte(secretKey)))
-	protectedRoute.GET("/users", server.GetUsers)
+	protectedRoute.GET("/users", server.GetUsers, func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			user := c.Get("user").(*jwt.Token)
+			claims := user.Claims.(jwt.MapClaims)
+			roles := claims["roles"].([]interface{})
+
+			if roles[0] != "user" {
+				return c.JSON(http.StatusForbidden, model.ErrorResponse{Status: http.StatusForbidden, Message: "Access denied"})
+			}
+			return next(c)
+		}
+	})
 
 	return e
 }
